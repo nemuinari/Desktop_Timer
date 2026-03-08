@@ -1,0 +1,19 @@
+[package.metadata.packager]
+# アプリの基本情報
+product_name = "MyStopwatch"
+identifier = "com.user.stopwatch"
+version = "0.1.0"
+icons = ["icons/icon.ico", "icons/icon.icns"]
+
+# 実行ファイルの設定
+[[package.metadata.packager.binaries]]
+path = "desktop_timer"
+main = true
+
+formats = ["wix", "dmg"]
+
+# Windows (WiX) の詳細設定
+[package.metadata.packager.wix]
+
+# ビルドとパッケージングのコマンド
+# $ cargo packager --release
