@@ -1,50 +1,77 @@
-# Desktop_Timer
+# ⏱️ RTM (Rust Timer)
 
-# Concept.
-```lua
--- ターミナルから呼び出せるタイマー(GUI)
--- $ rtm
+ターミナルから即座に起動し、キーボード操作のみで完結する軽量なデスクトップ・ストップウォッチ。
 
--- ショートカットで操作可能
--- start = [s]
--- stop = [s]
--- reset = [r]
--- close = [ESC]
-```
+---
 
-- development: Rust
-- Release: wix/GitHub Releases/MyWebsite
+## 📋 利用者向けガイド (User Guide)
 
-## 事前準備 (環境構築)
-- Windows用インストーラー (.msi) を作成するためのツールを導入
-- WiX Toolset: v3.11.2 等をインストール
-- ターミナルで cargo install cargo-wix を実行
+### インストール方法
 
-## アイコンの用意
-- アプリの顔となるアイコンを icons/ フォルダに配置
-- 形式: .ico (Windows) / .icns (Mac)
-- 512x512 の正方形PNGから変換して作成
+- Releases から最新の rtm.msi をダウンロードします。
+- インストーラーを実行して完了させると、自動的にシステムパス (Path) が通ります。
 
-## Cargo.toml の設定
-- [package] セクションに配布に必要なメタデータを追記
+### 使い方
 
-```toml
-# Cargo.toml
+任意のターミナル（PowerShell, コマンドプロンプト, Git Bash等）を開き、以下のコマンドを入力するだけで起動します。
+
+$ rtm
+
+### ⌨️ キーボードショートカット
+
+マウスを使わず、すべての操作をキーボードで行えます。
+
+| キー    | アクション                                    |
+| :------ | :-------------------------------------------- |
+| [S]     | Start / Stop (タイマーの開始と停止を切り替え) |
+| [R]     | Reset (時間を 00:00:00:00 にリセット)         |
+| [Space] | Minimize (タスクバーへ最小化)                 |
+| [Esc]   | Close (アプリを即座に終了)                    |
+
+---
+
+## 🛠️ 開発者向けガイド (Developer Guide)
+
+### 1. 事前準備
+
+- Rust: edition = "2021" 以降。
+- WiX Toolset: v3.11.2 等をインストール。bin フォルダを環境変数の Path に追加してください。
+- cargo-wix: cargo install cargo-wix で導入。
+
+### 2. プロジェクト設定 (Cargo.toml)
 
 [package]
-name = "desktop_timer"
+name = "rtm"
 version = "0.1.0"
-authors = ["Your Name <email@example.com>"]
-description = "Rust & iced 製の軽量ストップウォッチ"
+edition = "2021"
 
-```
+[dependencies]
+iced = { version = "0.10", features = ["async-std", "wgpu", "tokio"] }
 
-## インストーラーの生成
+[[bin]]
+name = "rtm"
+path = "src/main.rs"
+
+### 3. ビルド実行
+
+- アイコンの準備 (icons/icon.ico)
+- WiX設定の初期化
 
 ```bash
-// wix/main.wxs が生成
-// target/wix/ フォルダ内に .msi ファイル(インストーラー）が生成
-$ cargo wix init
-$ cargo wix
-
+$ cargo wix init --force
 ```
+
+- MSI生成 (target/wix/ に出力)
+
+```bash
+$ cargo wix -v
+```
+
+---
+
+## 📄 技術構成 (Tech Stack)
+
+- Language: Rust
+- GUI Framework: iced (v0.10)
+- Installer Tool: WiX Toolset (v3)
+- Design: Pixel Art Style

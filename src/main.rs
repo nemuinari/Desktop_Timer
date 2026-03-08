@@ -1,12 +1,22 @@
 /* ============================================================= */
-/*  Desktop Stopwatch */
+/* RTM: Rust Timer (Desktop Stopwatch)                          */
 /* ============================================================= */
 use iced::theme;
 use iced::widget::{button, column, row, text};
 use iced::{
-    executor, time, Alignment, Application, Command, Element, Font, Length, Settings, Theme,
+    executor, keyboard, time, Alignment, Application, Command, Element, Event, Font, Length,
+    Settings, Theme,
 };
 use std::time::{Duration, Instant};
+
+pub fn main() -> iced::Result {
+    let mut settings = Settings::default();
+    settings.window.size = (400, 180);
+    settings.window.resizable = false;
+    settings.default_font = Font::with_name("PixelMplus12-Regular");
+
+    GUI::run(settings)
+}
 
 struct GUI {
     tick_state: TickState,
@@ -18,8 +28,11 @@ struct GUI {
 pub enum Message {
     Start,
     Stop,
+    Toggle, // [s] キー用
     Reset,
     Tick(Instant),
+    Minimize, // [space] キー用
+    Exit,     // [Esc] キー用
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -46,14 +59,31 @@ impl Application for GUI {
     }
 
     fn title(&self) -> String {
-        String::from("STOP WATCH")
+        String::from("RTM - Rust Timer")
+    }
+
+    fn theme(&self) -> Self::Theme {
+        Theme::Dark
     }
 
     fn subscription(&self) -> iced::Subscription<Self::Message> {
-        match self.tick_state {
+        let tick = match self.tick_state {
             TickState::Ticking => time::every(Duration::from_millis(10)).map(Message::Tick),
             TickState::Stopped => iced::Subscription::none(),
-        }
+        };
+
+        let events = iced::subscription::events_with(|event, _status| match event {
+            Event::Keyboard(keyboard::Event::KeyPressed { key_code, .. }) => match key_code {
+                keyboard::KeyCode::S => Some(Message::Toggle),
+                keyboard::KeyCode::R => Some(Message::Reset),
+                keyboard::KeyCode::Space => Some(Message::Minimize),
+                keyboard::KeyCode::Escape => Some(Message::Exit),
+                _ => None,
+            },
+            _ => None,
+        });
+
+        iced::Subscription::batch(vec![tick, events])
     }
 
     fn update(&mut self, message: Self::Message) -> Command<Self::Message> {
@@ -65,6 +95,13 @@ impl Application for GUI {
             Message::Stop => {
                 self.tick_state = TickState::Stopped;
             }
+            Message::Toggle => {
+                if self.tick_state == TickState::Ticking {
+                    return self.update(Message::Stop);
+                } else {
+                    return self.update(Message::Start);
+                }
+            }
             Message::Reset => {
                 self.duration = Duration::default();
             }
@@ -73,6 +110,12 @@ impl Application for GUI {
                     self.duration += now - self.last_tick;
                     self.last_tick = now;
                 }
+            }
+            Message::Minimize => {
+                return iced::window::minimize(true);
+            }
+            Message::Exit => {
+                return iced::window::close();
             }
         }
         Command::none()
@@ -93,8 +136,8 @@ impl Application for GUI {
         let pixel_font = Font::with_name("PixelMplus12-Regular");
 
         let (label, message, btn_style) = match self.tick_state {
-            TickState::Stopped => ("Start", Message::Start, theme::Button::Secondary),
-            TickState::Ticking => ("Stop", Message::Stop, theme::Button::Destructive),
+            TickState::Stopped => ("Start [S]", Message::Start, theme::Button::Secondary),
+            TickState::Ticking => ("Stop [S]", Message::Stop, theme::Button::Destructive),
         };
 
         let start_stop_button = button(
@@ -105,42 +148,29 @@ impl Application for GUI {
         )
         .on_press(message)
         .style(btn_style)
-        .width(100);
+        .width(120);
 
         let reset_button = button(
-            text("Reset")
+            text("Reset [R]")
                 .font(pixel_font)
                 .horizontal_alignment(iced::alignment::Horizontal::Center)
                 .width(Length::Fill),
         )
         .on_press(Message::Reset)
         .style(theme::Button::Secondary)
-        .width(100);
+        .width(120);
 
         column![
             text(duration_text).font(pixel_font).size(60),
             row![start_stop_button, reset_button].spacing(20)
         ]
-        .spacing(20)
+        .spacing(10)
         .padding(10)
         .width(Length::Fill)
         .height(Length::Fill)
         .align_items(Alignment::Center)
         .into()
     }
-
-    fn theme(&self) -> Self::Theme {
-        Theme::Dark
-    }
-}
-
-fn main() -> iced::Result {
-    let mut settings = Settings::default();
-    settings.window.size = (400, 180);
-
-    settings.default_font = Font::with_name("PixelMplus12-Regular");
-
-    GUI::run(settings)
 }
 
 /*
@@ -163,4 +193,21 @@ fn main() -> iced::Result {
    - Default Text : #FFFFFF (白)
    - Soft Text    : #B9BBBE (薄いグレー)
    =============================================================
+*/
+/*
+   =============================================================
+   BUILD & RUN
+   =============================================================
+   ビルドと実行 (開発モード)
+      $ cargo run
+
+   リリースビルドと実行
+      $ cargo run --release
+
+   Windows向けインストーラーの作成 (cargo-wixが必要)
+       - cargo-wixのインストール
+         $ cargo install cargo-wix
+
+       - インストーラーのビルド
+         $ cargo wix -v
 */
