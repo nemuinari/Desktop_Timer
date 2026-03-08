@@ -40,6 +40,7 @@ $ rtm
 
 ### 2. プロジェクト設定 (Cargo.toml)
 
+```toml
 [package]
 name = "rtm"
 version = "0.1.0"
@@ -51,6 +52,7 @@ iced = { version = "0.10", features = ["async-std", "wgpu", "tokio"] }
 [[bin]]
 name = "rtm"
 path = "src/main.rs"
+```
 
 ### 3. ビルド実行
 

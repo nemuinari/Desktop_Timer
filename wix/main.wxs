@@ -60,8 +60,8 @@
 
     <Product
         Id='*'
-        Name='Desktop_Timer'
-        UpgradeCode='E27272D4-4E0B-46CC-91DC-13B3083A190E'
+        Name='rtm'
+        UpgradeCode='301CCC08-BB7B-4A5D-A360-4AD0E92657DD'
         Manufacturer='YourName'
         Language='1033'
         Codepage='1252'
@@ -69,7 +69,7 @@
 
         <Package Id='*'
             Keywords='Installer'
-            Description='A simple stopwatch app made with Rust and iced.'
+            Description='RTM: A keyboard-focused stopwatch app made with Rust and iced.'
             Manufacturer='YourName'
             InstallerVersion='450'
             Languages='1033'
@@ -83,11 +83,11 @@
             DowngradeErrorMessage='A newer version of [ProductName] is already installed. Setup will now exit.'/>
 
         <Media Id='1' Cabinet='media1.cab' EmbedCab='yes' DiskPrompt='CD-ROM #1'/>
-        <Property Id='DiskPrompt' Value='Desktop_Timer Installation'/>
+        <Property Id='DiskPrompt' Value='rtm Installation'/>
 
         <Directory Id='TARGETDIR' Name='SourceDir'>
             <Directory Id='$(var.PlatformProgramFilesFolder)' Name='PFiles'>
-                <Directory Id='APPLICATIONFOLDER' Name='Desktop_Timer'>
+                <Directory Id='APPLICATIONFOLDER' Name='rtm'>
                     
                     <!--
                       Enabling the license sidecar file in the installer is a four step process:
@@ -110,7 +110,7 @@
                     -->
 
                     <Directory Id='Bin' Name='bin'>
-                        <Component Id='Path' Guid='89C6FB25-7347-4CF3-A552-5CA911BAFEBA' KeyPath='yes'>
+                        <Component Id='Path' Guid='48287C0F-7CD8-4B28-AFB3-49E72CE8448E' KeyPath='yes'>
                             <Environment
                                 Id='PATH'
                                 Name='PATH'
@@ -123,9 +123,9 @@
                         <Component Id='binary0' Guid='*'>
                             <File
                                 Id='exe0'
-                                Name='Desktop_Timer.exe'
+                                Name='rtm.exe'
                                 DiskId='1'
-                                Source='$(var.CargoTargetBinDir)\Desktop_Timer.exe'
+                                Source='$(var.CargoTargetBinDir)\rtm.exe'
                                 KeyPath='yes'/>
                         </Component>
                     </Directory>
